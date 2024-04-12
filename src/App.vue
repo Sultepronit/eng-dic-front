@@ -5,7 +5,7 @@ import getArticle from '@/services/getArticle.js'
 onMounted(() => {
   window.resizeTo(500, 1100);
   window.moveTo(1600, 0);
-  console.log('Resized(?)');
+//   console.log('Resized(?)');
 });
 
 const query = ref('');
@@ -105,7 +105,7 @@ function openWindow(type) {
                 google
             </p>
 
-            <p class="window" @click="openWindow('self')"></p>
+            <!-- <p class="window" @click="openWindow('self')"></p> -->
         </div>
     </header>
 
@@ -139,13 +139,13 @@ function openWindow(type) {
     text-align: center;
     cursor: pointer;
 }
-.window {
+/*.window {
     width: 1.15em;
     border: 3px solid;
     margin: 0.2rem;
     margin-left: 1em;
     cursor: pointer;
-}
+}*/
 .selectedTab {
     border-color: blue;
 }
