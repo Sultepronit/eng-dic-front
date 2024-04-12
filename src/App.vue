@@ -1,6 +1,12 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import getArticle from '@/services/getArticle.js'
+
+onMounted(() => {
+  window.resizeTo(500, 1100);
+  window.moveTo(1600, 0);
+  console.log('Resized(?)');
+});
 
 const query = ref('');
 const e2uArticle = ref('');
