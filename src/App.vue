@@ -3,9 +3,10 @@ import { ref, onMounted } from 'vue';
 import getArticle from '@/services/getArticle.js'
 
 onMounted(() => {
-  window.resizeTo(500, 1100);
-  window.moveTo(1600, 0);
-//   console.log('Resized(?)');
+    window.resizeTo(500, 1200);
+    window.moveTo(1700, 0);
+    theInput.value.focus();
+    theInput.value.select();
 });
 
 const query = ref('');
@@ -36,17 +37,20 @@ function updateHistory() {
 
 async function request(input) {
     query.value = input;
-    // console.log(query);
 
     e2uArticle.value = '';
-    glosbeArticle.value = '---';
+    glosbeArticle.value = '';
     selectedArticle.value = 'e2u';
 
-    e2uArticle.value = await getArticle('e2u', query.value);
-
-    theInput.value.select();
-
     updateHistory();
+    if(theInput.value) {
+        theInput.value.select();
+    }
+
+    e2uArticle.value = await getArticle('e2u', query.value);
+    if(e2uArticle.value === '...') {
+        select('glosbe');
+    }
 }
 
 async function getGlosbe() {
@@ -57,22 +61,21 @@ function select(dic) {
     console.log(dic);
     selectedArticle.value = dic;
 
-    if(dic === 'glosbe' && glosbeArticle.value === '---') {
+    theInput.value.select();
+
+    if(dic === 'glosbe' && glosbeArticle.value === '') {
         getGlosbe();
     }
 }
 
 function openWindow(type) {
-    const strWindowFeatures = 'location=yes,height=1010,width=500,top=0,left=1600,scrollbars=yes,status=yes';
+    const strWindowFeatures = 'location=yes,height=1200,width=500,top=0,left=1700,scrollbars=yes,status=yes';
 
-    const URL = type === 'self' ? '/' : `https://translate.google.com/?sl=en&tl=uk&text=${query.value}%0A&op=translate`;
+    const URL =
+        type === 'google' ? `https://translate.google.com/?sl=en&tl=uk&text=${query.value}%0A&op=translate`
+        : '';
 
-    const re = open(URL, '_blank', strWindowFeatures);
-    console.log(re);
-   
-    if(re && type === 'self') {
-        close();
-    }
+    open(URL, '_blank', strWindowFeatures);
 }
 </script>
 
@@ -101,11 +104,8 @@ function openWindow(type) {
                 glosbe
             </p>
             <p class="tab" @click="openWindow('google')">
-                <!-- <a :href="`https://translate.google.com/?sl=en&tl=uk&text=${query}%0A&op=translate`" target="_blank">google</a> -->
                 google
             </p>
-
-            <!-- <p class="window" @click="openWindow('self')"></p> -->
         </div>
     </header>
 
@@ -139,15 +139,13 @@ function openWindow(type) {
     text-align: center;
     cursor: pointer;
 }
-/*.window {
-    width: 1.15em;
-    border: 3px solid;
-    margin: 0.2rem;
-    margin-left: 1em;
-    cursor: pointer;
-}*/
 .selectedTab {
     border-color: blue;
+}
+
+main {
+    height: calc(100vh - 5rem);
+    overflow: auto;
 }
 
 table {
