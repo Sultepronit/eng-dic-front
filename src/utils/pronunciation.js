@@ -1,4 +1,6 @@
+import generateSpeech from '@/utils/speachSynth.js';
 let urlList = null;
+let currentWord = '';
 let currentWordUrls = null;
 const audio = new Audio();
 
@@ -31,6 +33,7 @@ function playNext() {
 }
 
 async function findAudio(word) {
+    currentWord = word;
     console.log(word);
     if(!urlList) await fetchAudioUrls();
 
@@ -51,6 +54,8 @@ async function findAudio(word) {
 function play() {
     if(currentWordUrls) {
         playNext();
+    } else {
+        generateSpeech(currentWord);
     }
 }
 

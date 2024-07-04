@@ -1,6 +1,6 @@
 <script setup>
-import { watch, computed } from 'vue';
-import { findAudio, play } from '@/pronunciation.js';
+import { watch } from 'vue';
+import { findAudio, play } from '@/utils/pronunciation.js';
 
 const props = defineProps(['query']);
 

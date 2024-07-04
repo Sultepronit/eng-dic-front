@@ -3,7 +3,7 @@ import PlayAudio from '@/components/PlayAudio.vue';
 
 import { ref, onMounted } from 'vue';
 import getArticle from '@/services/getArticle.js'
-import { play } from '@/pronunciation.js';
+import { play } from '@/utils/pronunciation.js';
 
 // findAudio('day');
 
