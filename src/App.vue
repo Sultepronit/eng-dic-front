@@ -1,6 +1,11 @@
 <script setup>
+import PlayAudio from '@/components/PlayAudio.vue';
+
 import { ref, onMounted } from 'vue';
 import getArticle from '@/services/getArticle.js'
+import { play } from '@/pronunciation.js';
+
+// findAudio('day');
 
 onMounted(() => {
     window.resizeTo(500, 1200);
@@ -43,6 +48,7 @@ async function request(input) {
     selectedArticle.value = 'e2u';
 
     updateHistory();
+
     if(theInput.value) {
         theInput.value.select();
     }
@@ -77,17 +83,24 @@ function openWindow(type) {
 
     open(URL, '_blank', strWindowFeatures);
 }
+
+
 </script>
 
 <template>
     <header>
-        <input
-            type="text"
-            ref="theInput"
-            class="the-input"
-            :value="query"
-            @change="request($event.target.value)"
-        >
+        <div class="input-plus">
+            <input
+                type="text"
+                ref="theInput"
+                class="the-input"
+                :value="query"
+                @change="request($event.target.value)"
+                @keyup="$event.code === 'Enter' ? play() : null"
+            >
+            <PlayAudio :query />
+        </div>
+        
         <div class="tabs">
             <p
                 class="tab"
@@ -124,9 +137,16 @@ function openWindow(type) {
 </template>
 
 <style>
+.input-plus {
+    display: flex;
+    /* display: grid;
+    grid-template-columns: 1fr auto; */
+    gap: 0.4rem;
+    /* max-width: 50%; */
+}
 .the-input {
     font-size: 2rem;
-    max-width: 100%;
+    max-width: calc(100% - 1.4em);
 }
 .tabs {
    display: flex; 
