@@ -10,7 +10,7 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
-      devOptions: { enabled: true },
+      // devOptions: { enabled: true },
       manifest: {
         "name": "English-Ukrainian Dictionary",
         "short_name": "EngDic",

@@ -1,33 +1,37 @@
 <script setup>
 import PlayAudio from '@/components/PlayAudio.vue';
 
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import getArticle from '@/services/getArticle.js'
 import { play } from '@/utils/pronunciation.js';
 
 // findAudio('day');
 
+const theInput = ref(null);
+const query = ref('');
+
 onMounted(() => {
     window.resizeTo(500, 1200);
     window.moveTo(1700, 0);
+    theInput.value.value = query.value;
     theInput.value.focus();
     theInput.value.select();
 });
 
-const query = ref('');
 const e2uArticle = ref('');
 const glosbeArticle = ref('');
 const selectedArticle = ref('e2u');
 let history = [];
 
-const theInput = ref(null);
-
 function getHistory() {
     const json = localStorage.getItem('EngDicHistory');
     if(json) {
+        console.log('change 1');
         history = JSON.parse(json);
         query.value = history[history.length - 1];
-        request(query.value);
+        // request(query.value);
+        // theInput.value.value = history[history.length - 1];
+        request(history[history.length - 1]);
     }
 }
 getHistory();
@@ -40,8 +44,10 @@ function updateHistory() {
     }
 }
 
-async function request(input) {
+function request(input) {
+    console.log('change 2');
     query.value = input;
+    theInput.value?.select();
 
     e2uArticle.value = '';
     glosbeArticle.value = '';
@@ -49,11 +55,17 @@ async function request(input) {
 
     updateHistory();
 
-    if(theInput.value) {
-        theInput.value.select();
-    }
+    // if(theInput.value) {
+    //     theInput.value.select();
+    // }
 
-    e2uArticle.value = await getArticle('e2u', query.value);
+    asyncPart(input);
+}
+
+async function asyncPart(input) {
+    // await getArticle('e2u', input);
+    // e2uArticle.value = 'gio!';
+    e2uArticle.value = await getArticle('e2u', input);
     if(e2uArticle.value === '...') {
         select('glosbe');
     }
@@ -84,7 +96,7 @@ function openWindow(type) {
     open(URL, '_blank', strWindowFeatures);
 }
 
-
+// :value="query"
 </script>
 
 <template>
@@ -94,7 +106,7 @@ function openWindow(type) {
                 type="text"
                 ref="theInput"
                 class="the-input"
-                :value="query"
+                
                 @change="request($event.target.value)"
                 @keyup="$event.code === 'Enter' ? play() : null"
             >
