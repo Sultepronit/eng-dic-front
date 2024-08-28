@@ -1,23 +1,12 @@
 <script setup>
 import PlayAudio from '@/components/PlayAudio.vue';
 
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import getArticle from '@/services/getArticle.js'
 import { play } from '@/utils/pronunciation.js';
 
-// findAudio('day');
-
 const theInput = ref(null);
 const query = ref('');
-
-onMounted(() => {
-    window.resizeTo(500, 1200);
-    window.moveTo(1700, 0);
-    theInput.value.value = query.value;
-    theInput.value.focus();
-    theInput.value.select();
-});
-
 const e2uArticle = ref('');
 const glosbeArticle = ref('');
 const selectedArticle = ref('e2u');
@@ -26,15 +15,19 @@ let history = [];
 function getHistory() {
     const json = localStorage.getItem('EngDicHistory');
     if(json) {
-        console.log('change 1');
         history = JSON.parse(json);
-        query.value = history[history.length - 1];
-        // request(query.value);
-        // theInput.value.value = history[history.length - 1];
-        request(history[history.length - 1]);
+        return history[history.length - 1];
     }
+    return '';
 }
-getHistory();
+
+onMounted(() => {
+    window.resizeTo(500, 1200);
+    window.moveTo(1700, 0);
+
+    theInput.value.value = getHistory();
+    handleInput(theInput.value.value);
+});
 
 function updateHistory() {
     if(history[history.length - 1] !== query.value) {
@@ -44,10 +37,11 @@ function updateHistory() {
     }
 }
 
-function request(input) {
-    console.log('change 2');
+async function handleInput(input) {
+    if (!input) return;
+
     query.value = input;
-    theInput.value?.select();
+    theInput.value.select();
 
     e2uArticle.value = '';
     glosbeArticle.value = '';
@@ -55,17 +49,8 @@ function request(input) {
 
     updateHistory();
 
-    // if(theInput.value) {
-    //     theInput.value.select();
-    // }
+    e2uArticle.value = await getArticle('e2u', query.value);
 
-    asyncPart(input);
-}
-
-async function asyncPart(input) {
-    // await getArticle('e2u', input);
-    // e2uArticle.value = 'gio!';
-    e2uArticle.value = await getArticle('e2u', input);
     if(e2uArticle.value === '...') {
         select('glosbe');
     }
@@ -95,8 +80,6 @@ function openWindow(type) {
 
     open(URL, '_blank', strWindowFeatures);
 }
-
-// :value="query"
 </script>
 
 <template>
@@ -106,8 +89,7 @@ function openWindow(type) {
                 type="text"
                 ref="theInput"
                 class="the-input"
-                
-                @change="request($event.target.value)"
+                @change="handleInput($event.target.value)"
                 @keyup="$event.code === 'Enter' ? play() : null"
             >
             <PlayAudio :query />
@@ -151,10 +133,7 @@ function openWindow(type) {
 <style>
 .input-plus {
     display: flex;
-    /* display: grid;
-    grid-template-columns: 1fr auto; */
     gap: 0.4rem;
-    /* max-width: 50%; */
 }
 .the-input {
     font-size: 2rem;
@@ -166,7 +145,6 @@ function openWindow(type) {
 .tab {
     width: 4em;
     border: 3px solid gray;
-    /* background: #dadada; */
     margin: 0.2rem;
     text-align: center;
     cursor: pointer;
@@ -199,10 +177,6 @@ td {
 .result_row .found {
     color: blue;
 }
-
-/* .glosbe {
-    overflow: auto;
-} */
 
 .glosbe-eng {
     background: #fdfdab;
