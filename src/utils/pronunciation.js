@@ -1,4 +1,8 @@
 import generateSpeech from '@/utils/speachSynth.js';
+let urlsForExpression = null;
+const moduleUrl = import.meta.env.VITE_MY_SYNTH_FN;
+import(moduleUrl).then(module => urlsForExpression = module.default);
+
 let urlList = null;
 let currentWord = '';
 let currentWordUrls = null;
@@ -15,21 +19,19 @@ const urlKeys = {
 async function fetchAudioUrls() {
     const resp = await fetch('/recordUrls.json');
     urlList = await resp.json();
-    console.log(urlList['apple']);
 }
 
 let currentIndex = 0;
 
 function playNext() {
-    currentIndex++;
-    if(currentIndex >= currentWordUrls.length) {
-        currentIndex = 0;
-    } 
     console.log(currentIndex);
     console.log(currentWordUrls[currentIndex]);
 
     audio.src = currentWordUrls[currentIndex];
     audio.play();
+
+    currentIndex++;
+    if(currentIndex >= currentWordUrls.length) currentIndex = 0; 
 }
 
 async function findAudio(word) {
@@ -55,7 +57,11 @@ function play() {
     if(currentWordUrls) {
         playNext();
     } else {
-        generateSpeech(currentWord);
+        // generateSpeech(currentWord);
+        // console.log(urlsForExpression);
+        currentWordUrls = urlsForExpression(currentWord, true);
+        console.log(currentWordUrls);
+        playNext();
     }
 }
 
